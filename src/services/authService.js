@@ -1,24 +1,32 @@
 import { supabase } from "../supabaseClient";
+import bcrypt from "bcryptjs";
 
-// LOGIN
+// LOGIN - Compare hashed password
 export const loginStudent = async (studentId, password) => {
   const { data, error } = await supabase
     .from("students")
     .select("*")
     .eq("student_id", studentId)
-    .eq("password", password)
     .single();
 
   if (error || !data) {
     return { success: false, message: "Invalid login credentials" };
   }
 
-  return { success: true, data };
+  // Compare the provided password with the hashed password
+  const isPasswordValid = await bcrypt.compare(password, data.password);
+  
+  if (!isPasswordValid) {
+    return { success: false, message: "Invalid login credentials" };
+  }
+
+  const { password: _, ...userWithoutPassword } = data;
+  
+  return { success: true, data: userWithoutPassword };
 };
 
-// REGISTER
+// REGISTER - Hash password before storing
 export const registerStudent = async (form) => {
-  // 1️⃣ Check if student ID already exists
   const { data: existing, error: checkError } = await supabase
     .from("students")
     .select("student_id")
@@ -33,24 +41,31 @@ export const registerStudent = async (form) => {
     return { success: false, message: "Student ID already registered" };
   }
 
-  // 2️⃣ Insert if not existing
-  const { error } = await supabase
-    .from("students")
-    .insert([
-      {
-        student_id: form.studentId,
-        first_name: form.firstName,
-        middle_name: form.middleName,
-        last_name: form.lastName,
-        course: form.course,
-        password: form.password,
-      },
-    ]);
+  try {
+    // Hash the password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(form.password, saltRounds);
 
-  if (error) {
-    return { success: false, message: error.message };
+    // Insert with hashed password
+    const { error } = await supabase
+      .from("students")
+      .insert([
+        {
+          student_id: form.studentId,
+          first_name: form.firstName,
+          middle_name: form.middleName,
+          last_name: form.lastName,
+          course: form.course,
+          password: hashedPassword,
+        },
+      ]);
+
+    if (error) {
+      return { success: false, message: error.message };
+    }
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: "Error creating account" };
   }
-
-  return { success: true };
 };
-

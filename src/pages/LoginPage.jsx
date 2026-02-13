@@ -26,11 +26,16 @@ function LoginPage() {
   };
 
   const [form, setForm] = useState({
+    // LOGIN
     loginId: "",
     loginPass: "",
+
+    // REGISTER STEP 1
     firstName: "",
     middleName: "",
     lastName: "",
+    
+    // REGISTER STEP 2
     studentId: "",
     password: "",
     confirmPassword: "",
@@ -96,7 +101,7 @@ function LoginPage() {
         onClose={() => setPopup({ ...popup, show: false })}
       />
 
-      <div className="absolute inset-0 bg-gradient-to-b from-green-100/60 to-emerald-800/100 backdrop-blur-xs"></div>
+      <div className="absolute inset-0 bg-linear-to-b from-green-100/60 to-emerald-800 backdrop-blur-xs"></div>
 
       <div className="flex md:flex-row flex-col md:mx-30 gap-y-4 gap-x-30 items-center justify-center relative z-10 h-full">
 

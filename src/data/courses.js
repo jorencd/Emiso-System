@@ -9,7 +9,8 @@ const courses = [
     'Bachelor of Science in Nursing', 
     'Bachelor of Science in Tourism Management',
     'Bachelor of Science in Accounting',
-    'Bachelor of Science in Accounting Information System',
+    'Bachelor of Science in Accounting Information Systems',
+    'Bachelor of Science in Information Technology'
 ];
 
 export default courses;

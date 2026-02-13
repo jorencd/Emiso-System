@@ -16,11 +16,18 @@ export const validateNameStep = (form) => {
 
 // STEP 2
 export const validateRegisterStep = (form) => {
+  if (!form.studentId.trim()) 
+    return "Student ID is required";
+
   if (!idRegex.test(form.studentId))
     return "Student ID format must be 12-3456";
 
+  if (form.password.length < 8) {
+      return "Password must be at least 8 characters";;
+    }
+
   if (!passRegex.test(form.password))
-    return "Password must be strong";
+    return "Password must contain a special character, UPPERCASE, lowercase, number.";
 
   if (form.password !== form.confirmPassword)
     return "Passwords do not match";
@@ -33,6 +40,10 @@ export const validateRegisterStep = (form) => {
 
 // LOGIN
 export const validateLoginInput = (form) => {
+
+  if (!form.loginId.trim())
+    return "Student ID is required";
+
   if (!idRegex.test(form.loginId))
     return "Student ID format must be 12-3456";
 
