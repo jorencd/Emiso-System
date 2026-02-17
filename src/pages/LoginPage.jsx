@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import bg from "../assets/loginBG/loginBG.jpg";
 import Logo from "../assets/logo/PLSPLogo.png";
 import courses from "../data/courses";
@@ -12,6 +13,7 @@ import {
 } from "../utils/validators";
 
 function LoginPage() {
+  const navigate = useNavigate(); // Add this hook
   const [isRegistering, setIsRegistering] = useState(false);
   const [step, setStep] = useState(1);
 
@@ -34,7 +36,7 @@ function LoginPage() {
     firstName: "",
     middleName: "",
     lastName: "",
-    
+
     // REGISTER STEP 2
     studentId: "",
     password: "",
@@ -46,7 +48,7 @@ function LoginPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // LOGIN
+  // LOGIN - Updated to set auth and navigate
   const handleLogin = async () => {
     const errorMsg = validateLoginInput(form);
     if (errorMsg) return showPopup(errorMsg);
@@ -55,7 +57,21 @@ function LoginPage() {
 
     if (!res.success) return showPopup(res.message);
 
+    // Set authentication in localStorage
+    localStorage.setItem("auth", "true");
+
+    // You can also store user data if needed
+    if (res.data) {
+      localStorage.setItem("user", JSON.stringify(res.data));
+    }
+
     showPopup("Login Successful", true);
+
+    // Navigate to book page after successful login
+    // Add a small delay to show the success message
+    setTimeout(() => {
+      navigate("/hero");
+    }, 1000);
   };
 
   // STEP 1
@@ -89,6 +105,7 @@ function LoginPage() {
   };
 
 
+
   return (
     <div
       className="h-screen bg-cover bg-center relative"
@@ -107,7 +124,9 @@ function LoginPage() {
 
         <div className="flex flex-col items-center gap-y-4">
           <div
-            className="md:h-70 md:w-70 h-40 w-40 bg-cover rounded-full"
+            className="
+            md:h-70 md:w-70 h-40 
+            w-40 bg-cover rounded-full"
             style={{ backgroundImage: `url(${Logo})` }}
           ></div>
 
@@ -165,21 +184,27 @@ function LoginPage() {
                 What's your name?
               </h1>
 
-              <input name="firstName" onChange={handleChange}
-                placeholder="First Name"
-                className="border-2 border-gray-300 rounded p-2" />
+              <input 
+              name="firstName" 
+              onChange={handleChange}
+              placeholder="First Name"
+              className="border-2 border-gray-300 rounded p-2" />
 
-              <input name="middleName" onChange={handleChange}
-                placeholder="Middle Name"
-                className="border-2 border-gray-300 rounded p-2" />
+              <input 
+              name="middleName" 
+              onChange={handleChange}
+              placeholder="Middle Name"
+              className="border-2 border-gray-300 rounded p-2" />
 
-              <input name="lastName" onChange={handleChange}
-                placeholder="Last Name"
-                className="border-2 border-gray-300 rounded p-2" />
+              <input 
+              name="lastName" 
+              onChange={handleChange}
+              placeholder="Last Name"
+              className="border-2 border-gray-300 rounded p-2" />
 
               <button
-                onClick={handleStep1}
-                className="bg-green-700 hover:bg-green-800 text-white py-2 rounded cursor-pointer"
+              onClick={handleStep1}
+              className="bg-green-700 hover:bg-green-800 text-white py-2 rounded cursor-pointer"
               >
                 Next
               </button>
@@ -200,21 +225,31 @@ function LoginPage() {
                 Student Information
               </h1>
 
-              <input name="studentId" onChange={handleChange}
-                placeholder="Student ID"
-                className="border-2 border-gray-300 rounded p-2 w-full" />
+              <input 
+              name="studentId" 
+              onChange={handleChange}
+              placeholder="Student ID"
+              className="border-2 border-gray-300 rounded p-2 w-full" />
 
-              <input type="password" name="password" onChange={handleChange}
-                placeholder="Password"
-                className="border-2 border-gray-300 rounded p-2 w-full" />
+              <input 
+              type="password" 
+              name="password" 
+              onChange={handleChange}
+              placeholder="Password"
+              className="border-2 border-gray-300 rounded p-2 w-full" />
 
-              <input type="password" name="confirmPassword" onChange={handleChange}
-                placeholder="Confirm Password"
-                className="border-2 border-gray-300 rounded p-2 w-full" />
+              <input 
+              type="password" 
+              name="confirmPassword" 
+              onChange={handleChange}
+              placeholder="Confirm Password"
+              className="border-2 border-gray-300 rounded p-2 w-full" />
 
-              <select name="course" onChange={handleChange}
-                className="border-2 border-gray-300 rounded p-2 w-full">
-                <option value="">Select Course</option>
+              <select 
+              name="course" 
+              onChange={handleChange}
+              className="border-2 border-gray-300 rounded p-2 w-full">
+              <option value="">Select Course</option>
                 {courses.map((course, i) => (
                   <option key={i} value={course}>{course}</option>
                 ))}
