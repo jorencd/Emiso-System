@@ -1,11 +1,13 @@
-import React from 'react'
+import React, { useState } from "react";
 import Logo from "../../../assets/logo/PLSPLogo.png";
 import bg from "../../../assets/loginBG/loginBG.jpg";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
+import ConfirmModal from "../modal/ConfirmModal";
 
 function BookpageSidebar() {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleBooksClick = (e) => {
     e.preventDefault();
@@ -19,18 +21,25 @@ function BookpageSidebar() {
 
   const handleLogoutClick = (e) => {
     e.preventDefault();
-    
-    // Clear authentication data
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmLogout = () => {
+    // Clear authentication data and redirect
     localStorage.removeItem("auth");
     localStorage.removeItem("user");
-    
     navigate("/", { replace: true });
+    setIsModalOpen(false);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   const getActiveClass = ({ isActive }) => {
     return `px-4 py-3 gap-x-2 text-white rounded-lg transition-all duration-300 font-medium cursor-pointer w-full flex ${
-      isActive 
-        ? 'bg-white/30 border-l-4 border-white shadow-lg' 
+      isActive
+        ? 'bg-white/30 border-l-4 border-white shadow-lg'
         : 'hover:bg-white/20'
     }`;
   };
@@ -94,8 +103,15 @@ function BookpageSidebar() {
           </NavLink>
         </div>
       </nav>
+
+      <ConfirmModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmLogout}
+        message="Are you sure you want to log out?"
+      />
     </div>
-  )
+  );
 }
 
-export default BookpageSidebar
+export default BookpageSidebar;

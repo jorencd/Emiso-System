@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-function SearchFilterTable({ title, placeholder, categories, children }) {
+function SearchFilterTable({ title, placeholder, categories, onSearchChange, onCategoryChange, children }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
+
+  useEffect(() => {
+    onSearchChange(search);
+    onCategoryChange(category);
+  }, [search, category, onSearchChange, onCategoryChange]);
 
   return (
     <div className='w-full px-10 py-7 rounded-2xl border-2 border-green-700 m-2'>
