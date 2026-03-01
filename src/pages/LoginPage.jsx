@@ -4,6 +4,7 @@ import bg from "../assets/loginBG/loginBG.jpg";
 import Logo from "../assets/logo/PLSPLogo.png";
 import courses from "../data/courses";
 import Popup from "../components/pop_up/Popup";
+import FloatingInput from "../components/common/input/FloaterInput";
 
 import { loginStudent, registerStudent } from "../services/authService";
 import {
@@ -13,7 +14,7 @@ import {
 } from "../utils/validators";
 
 function LoginPage() {
-  const navigate = useNavigate(); // Add this hook
+  const navigate = useNavigate();
   const [isRegistering, setIsRegistering] = useState(false);
   const [step, setStep] = useState(1);
 
@@ -28,16 +29,11 @@ function LoginPage() {
   };
 
   const [form, setForm] = useState({
-    // LOGIN
     loginId: "",
     loginPass: "",
-
-    // REGISTER STEP 1
     firstName: "",
     middleName: "",
     lastName: "",
-
-    // REGISTER STEP 2
     studentId: "",
     password: "",
     confirmPassword: "",
@@ -48,7 +44,7 @@ function LoginPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // LOGIN - Updated to set auth and navigate
+  /* ================= LOGIN ================= */
   const handleLogin = async () => {
     const errorMsg = validateLoginInput(form);
     if (errorMsg) return showPopup(errorMsg);
@@ -57,32 +53,27 @@ function LoginPage() {
 
     if (!res.success) return showPopup(res.message);
 
-    // Set authentication in localStorage
     localStorage.setItem("auth", "true");
 
-    // You can also store user data if needed
     if (res.data) {
       localStorage.setItem("user", JSON.stringify(res.data));
     }
 
     showPopup("Login Successful", true);
 
-    // Navigate to book page after successful login
-    // Add a small delay to show the success message
     setTimeout(() => {
       navigate("/hero");
     }, 1000);
   };
 
-  // STEP 1
+  /* ================= REGISTER STEP 1 ================= */
   const handleStep1 = () => {
     const errorMsg = validateNameStep(form);
     if (errorMsg) return showPopup(errorMsg);
-
     setStep(2);
   };
 
-  // STEP 2
+  /* ================= REGISTER STEP 2 ================= */
   const handleRegister = async () => {
     const errorMsg = validateRegisterStep(form);
     if (errorMsg) return showPopup(errorMsg);
@@ -95,16 +86,7 @@ function LoginPage() {
 
     setIsRegistering(false);
     setStep(1);
-    setForm({
-      ...form,
-      studentId: "",
-      password: "",
-      confirmPassword: "",
-      course: "",
-    });
   };
-
-
 
   return (
     <div
@@ -124,43 +106,44 @@ function LoginPage() {
 
         <div className="flex flex-col items-center gap-y-4">
           <div
-            className="
-            md:h-70 md:w-70 h-40 
-            w-40 bg-cover rounded-full"
+            className="md:h-70 md:w-70 h-40 w-40 bg-cover rounded-full"
             style={{ backgroundImage: `url(${Logo})` }}
           ></div>
 
-          <p className="md:text-2xl text-xl w-full font-bold text-white text-center">
+          <p className="md:text-2xl text-xl font-bold text-white text-center">
             Pamantasan ng Lungsod ng San Pablo
           </p>
         </div>
 
-        <div className="flex flex-col w-100 justify-center items-center gap-y-2 bg-white rounded-xl p-6">
+        <div className="flex flex-col w-100 justify-center items-center gap-y-4 bg-white rounded-xl p-6 shadow-lg">
 
-          {/* LOGIN */}
           {!isRegistering && (
             <>
               <h1 className="text-green-900 font-bold text-3xl">Welcome!</h1>
-              <p>Fill out the information below in order to access your account</p>
+              <p className="text-sm text-gray-600 text-center">
+                Fill out the information below to access your account
+              </p>
 
-              <input
+              <FloatingInput
                 name="loginId"
+                value={form.loginId}
                 onChange={handleChange}
-                placeholder="Student ID"
-                className="border-2 border-gray-300 rounded p-2 w-full"
+                label="Student ID"
+                icon="mdi:card-account-details"
               />
 
-              <input
+              <FloatingInput
                 type="password"
                 name="loginPass"
+                value={form.loginPass}
                 onChange={handleChange}
-                placeholder="Password"
-                className="border-2 border-gray-300 rounded p-2 w-full"
+                label="Password"
+                icon="mdi:lock"
               />
 
               <button
                 onClick={handleLogin}
-                className="bg-green-700 hover:bg-green-800 w-full text-white px-4 py-2 rounded cursor-pointer"
+                className="bg-green-700 hover:bg-green-800 w-full text-white px-4 py-3 rounded transition"
               >
                 Login
               </button>
@@ -169,7 +152,7 @@ function LoginPage() {
                 <p>Don't have an account?</p>
                 <button
                   onClick={() => setIsRegistering(true)}
-                  className="text-green-700 font-bold cursor-pointer"
+                  className="text-green-700 font-bold"
                 >
                   Register
                 </button>
@@ -179,43 +162,49 @@ function LoginPage() {
 
           {/* REGISTER STEP 1 */}
           {isRegistering && step === 1 && (
-            <div className="flex flex-col w-full gap-y-2">
+            <>
               <h1 className="text-green-900 font-bold text-2xl">
                 What's your name?
               </h1>
 
-              <input 
-              name="firstName" 
-              onChange={handleChange}
-              placeholder="First Name"
-              className="border-2 border-gray-300 rounded p-2" />
+              <FloatingInput
+                name="firstName"
+                value={form.firstName}
+                onChange={handleChange}
+                label="First Name"
+                icon="mdi:account"
+              />
 
-              <input 
-              name="middleName" 
-              onChange={handleChange}
-              placeholder="Middle Name"
-              className="border-2 border-gray-300 rounded p-2" />
+              <FloatingInput
+                name="middleName"
+                value={form.middleName}
+                onChange={handleChange}
+                label="Middle Name"
+                icon="mdi:account"
+              />
 
-              <input 
-              name="lastName" 
-              onChange={handleChange}
-              placeholder="Last Name"
-              className="border-2 border-gray-300 rounded p-2" />
+              <FloatingInput
+                name="lastName"
+                value={form.lastName}
+                onChange={handleChange}
+                label="Last Name"
+                icon="mdi:account"
+              />
 
               <button
-              onClick={handleStep1}
-              className="bg-green-700 hover:bg-green-800 text-white py-2 rounded cursor-pointer"
+                onClick={handleStep1}
+                className="bg-green-700 hover:bg-green-800 text-white py-3 rounded w-full"
               >
                 Next
               </button>
 
               <button
                 onClick={() => { setIsRegistering(false); setStep(1); }}
-                className="text-sm text-gray-500 cursor-pointer"
+                className="text-sm text-gray-500"
               >
                 I already have an account
               </button>
-            </div>
+            </>
           )}
 
           {/* REGISTER STEP 2 */}
@@ -225,46 +214,64 @@ function LoginPage() {
                 Student Information
               </h1>
 
-              <input 
-              name="studentId" 
-              onChange={handleChange}
-              placeholder="Student ID"
-              className="border-2 border-gray-300 rounded p-2 w-full" />
+              <FloatingInput
+                name="studentId"
+                value={form.studentId}
+                onChange={handleChange}
+                label="Student ID"
+                icon="mdi:card-account-details"
+              />
 
-              <input 
-              type="password" 
-              name="password" 
-              onChange={handleChange}
-              placeholder="Password"
-              className="border-2 border-gray-300 rounded p-2 w-full" />
+              <FloatingInput
+                type="password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                label="Password"
+                icon="mdi:lock"
+              />
 
-              <input 
-              type="password" 
-              name="confirmPassword" 
-              onChange={handleChange}
-              placeholder="Confirm Password"
-              className="border-2 border-gray-300 rounded p-2 w-full" />
+              <FloatingInput
+                type="password"
+                name="confirmPassword"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                label="Confirm Password"
+                icon="mdi:lock-check"
+              />
 
-              <select 
-              name="course" 
-              onChange={handleChange}
-              className="border-2 border-gray-300 rounded p-2 w-full">
-              <option value="">Select Course</option>
-                {courses.map((course, i) => (
-                  <option key={i} value={course}>{course}</option>
-                ))}
-              </select>
+              {/* COURSE SELECT */}
+              <div className="relative w-full">
+                <Icon
+                  icon="mdi:school"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl"
+                />
+
+                <select
+                  name="course"
+                  value={form.course}
+                  onChange={handleChange}
+                  className="w-full border-2 border-gray-300 rounded px-10 py-3 focus:border-green-700 focus:outline-none"
+                >
+                  <option value="">Select Course</option>
+                  {courses.map((course, i) => (
+                    <option key={i} value={course}>
+                      {course}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               <button
                 onClick={handleRegister}
-                className="bg-green-700 hover:bg-green-800 text-white py-2 rounded cursor-pointer w-full"
+                className="bg-green-700 hover:bg-green-800 text-white py-3 rounded w-full"
               >
                 Register Account
               </button>
 
               <button
                 onClick={() => { setIsRegistering(false); setStep(1); }}
-                className="text-sm text-gray-500 cursor-pointer"
+                className="text-sm text-gray-500"
               >
                 I already have an account
               </button>

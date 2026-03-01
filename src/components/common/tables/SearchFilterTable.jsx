@@ -1,13 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 function SearchFilterTable({ title, placeholder, categories, onSearchChange, onCategoryChange, children }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
 
-  useEffect(() => {
-    onSearchChange(search);
-    onCategoryChange(category);
-  }, [search, category, onSearchChange, onCategoryChange]);
+  // Use useCallback to memoize the functions
+  const handleSearchChange = useCallback((value) => {
+    setSearch(value);
+    onSearchChange(value);
+  }, [onSearchChange]);
+
+  const handleCategoryChange = useCallback((value) => {
+    setCategory(value);
+    onCategoryChange(value);
+  }, [onCategoryChange]);
 
   return (
     <div className='w-full px-10 py-7 rounded-2xl border-2 border-green-700 m-2'>
@@ -16,17 +22,18 @@ function SearchFilterTable({ title, placeholder, categories, onSearchChange, onC
       </h1>
 
       <div className='flex w-full gap-3 mb-4'>
+
         <input
           type="text"
           placeholder={placeholder}
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => handleSearchChange(e.target.value)}
           className='border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-600'
         />
 
         <select
           value={category}
-          onChange={(e) => setCategory(e.target.value)}
+          onChange={(e) => handleCategoryChange(e.target.value)}
           className='border rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-600'
         >
           {categories.map((cat, index) => (
