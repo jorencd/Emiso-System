@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Sidebar from "../components/common/sidebar/Sidebar";
 import SearchFilterTable from "../components/common/tables/SearchFilterTable";
-import JournalCard from "../components/common/cards/JournalCard";
+import Card from "../components/common/cards/Card";
 import { useJournals } from "../hooks/useJournals";
 
 const journalCategories = [
@@ -75,7 +75,7 @@ function JournalPage() {
         {!loading && !error && filteredJournals.length > 0 && (
           <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {filteredJournals.map((journal) => (
-              <JournalCard
+              <Card
                 key={journal.id}
                 title={journal.title}
                 pdfUrl={journal.pdfUrl}

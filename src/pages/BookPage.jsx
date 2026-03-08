@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Sidebar from "../components/common/sidebar/Sidebar";
 import SearchFilterTable from "../components/common/tables/SearchFilterTable";
-import BookCard from "../components/common/cards/BookCard";
+import BookCard from "../components/common/cards/Card";
 import { useBooks } from "../hooks/useBooks";
 
 const bookCategories = [
@@ -19,12 +19,10 @@ function BookPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const { books, loading, error } = useBooks();
-  
-  // Fix: useState returns an array, not an object
-  const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage] = useState(16);
 
-  // Filter books
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(12);
+
   const filteredBooks = books.filter((book) => {
     const matchesCategory =
       selectedCategory === "All" || book.category === selectedCategory;
@@ -35,21 +33,18 @@ function BookPage() {
     return matchesCategory && matchesSearch;
   });
 
-  // Pagination logic
   const lastPostIndex = currentPage * postsPerPage;
   const firstPostIndex = lastPostIndex - postsPerPage;
   const currentBooks = filteredBooks.slice(firstPostIndex, lastPostIndex);
-  
-  // Calculate total pages
+
   const totalPages = Math.ceil(filteredBooks.length / postsPerPage);
 
-  // Handle page changes
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
   return (
-    <div className="flex w-full h-full gap-x-2">
+    <div className="flex w-full h-full gap-x-2 ">
       <Sidebar />
 
       <SearchFilterTable
@@ -98,8 +93,8 @@ function BookPage() {
 
         {/* BOOK GRID - Use currentBooks instead of filteredBooks */}
         {!loading && !error && filteredBooks.length > 0 && (
-          <>
-            <div className="grid grid-cols-1 gap-10 mt-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className=''>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {currentBooks.map((book) => (
                 <BookCard
                   key={book.id}
@@ -112,7 +107,7 @@ function BookPage() {
             
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="flex justify-center mt-8 space-x-2">
+              <div className="flex items-end justify-center mt-8 space-x-2">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
@@ -128,7 +123,7 @@ function BookPage() {
                     onClick={() => handlePageChange(index + 1)}
                     className={`px-4 py-2 text-sm font-medium rounded-md ${
                       currentPage === index + 1
-                        ? "bg-blue-600 text-white"
+                        ? "bg-green-400 text-white"
                         : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
                     }`}
                   >
@@ -150,7 +145,7 @@ function BookPage() {
             <div className="mt-4 text-sm text-center text-gray-600">
               Showing {firstPostIndex + 1} - {Math.min(lastPostIndex, filteredBooks.length)} of {filteredBooks.length} books
             </div>
-          </>
+          </div>
         )}
       </SearchFilterTable>
     </div>

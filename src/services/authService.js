@@ -65,7 +65,7 @@ export const registerStudent = async (form) => {
     }
 
     return { success: true };
-  } catch (error) {
+  } catch {
     return { success: false, message: "Error creating account" };
   }
 };
