@@ -6,7 +6,7 @@ import { Icon } from "@iconify/react";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
-function Card({ title, pdfUrl }) {
+function Card({ title, pdfUrl, bgImageUrl }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const pdfContainerRef = useRef(null);
@@ -45,6 +45,7 @@ function Card({ title, pdfUrl }) {
     loadPDF();
   }, [isModalOpen, pdfUrl]);
 
+  // Function to truncate title to first 3 words
   const truncateTitle = (text, wordLimit = 3) => {
     if (!text) return "";
     const words = text.split(" ");
@@ -58,31 +59,28 @@ function Card({ title, pdfUrl }) {
     <>
       {/* CARD */}
       <div
-        className="h-35 cursor-pointer hover:bg-neutral-100 bg-white rounded-b-lg border-t-8 border-green-400 px-4 py-5 flex flex-col justify-around shadow-md transition"
+        className="
+      lg:h-20 group flex items-center gap-4
+      border border-gray-400 rounded-lg shadow-md
+      cursor-pointer overflow-hidden
+      transition-shadow duration-300
+      hover:shadow-xl
+      "
         onClick={() => setIsModalOpen(true)}
       >
-        <p className="text-base font-bold font-sans" title={title}>
+        <img
+          src={bgImageUrl}
+          alt={title}
+          className="
+          h-full w-20 object-cover
+          transition-transform duration-300 
+          group-hover:scale-110
+          "
+        />
+
+        <p className="flex-1 font-semibold text-left m-4" title={title}>
           {truncateTitle(title)}
         </p>
-
-        <div className="flex justify-between items-center">
-          <Icon
-            icon="material-symbols-light:book-ribbon-rounded"
-            width="30"
-            height="30"
-            className="text-neutral-400"
-          />
-
-          <button
-            className="bg-slate-200 px-5 rounded-xl cursor-pointer hover:bg-slate-400 transition-colors"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsModalOpen(true);
-            }}
-          >
-            View
-          </button>
-        </div>
       </div>
 
       {/* MODAL */}
@@ -98,7 +96,7 @@ function Card({ title, pdfUrl }) {
           </button>
         </div>
 
-        {/* PDF DISPLAY */}
+        {/* PDF DISPLAY AREA */}
         <div className="relative flex-1 p-6 overflow-auto bg-gray-200">
           {isLoading && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-white">

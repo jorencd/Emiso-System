@@ -49,7 +49,7 @@ function BookpageSidebar() {
       className="relative flex flex-col w-1/4 h-screen p-2 bg-center bg-cover border-white"
       style={{ backgroundImage: `url(${bg})` }}
     >
-      <div className="absolute inset-0 rounded-lg bg-linear-to-b from-green-600/80 to-emerald-900"></div>
+      <div className="absolute inset-0 bg-linear-to-b from-[#71b280ea] to-[#134E5E]"></div>
 
       {/* Top Section */}
       <div className="relative z-10 flex flex-col items-center gap-y-4">
