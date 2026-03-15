@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 
 function SearchFilterTable({ title, placeholder, categories, onSearchChange, onCategoryChange, children }) {
   const [search, setSearch] = useState("");
@@ -16,7 +16,7 @@ function SearchFilterTable({ title, placeholder, categories, onSearchChange, onC
   }, [onCategoryChange]);
 
   return (
-    <div className="flex w-full flex-col p-2 px-10 border border-green-700">
+    <div className='w-full px-10 py-7 rounded-2xl border-2 border-green-700 m-2'>
       <h1 className='text-2xl font-bold text-neutral-700 mb-4'>
         {title}
       </h1>
@@ -28,13 +28,13 @@ function SearchFilterTable({ title, placeholder, categories, onSearchChange, onC
           placeholder={placeholder}
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className='border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-600'
+          className='w-full px-3 border rounded-md border-neutral-300 focus:outline-none focus:ring'
         />
 
         <select
           value={category}
           onChange={(e) => handleCategoryChange(e.target.value)}
-          className='border rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-600'
+          className='px-3 py-2 bg-white border rounded-md border-neutral-300 focus:outline-none focus:ring'
         >
           {categories.map((cat, index) => (
             <option key={index} value={cat}>

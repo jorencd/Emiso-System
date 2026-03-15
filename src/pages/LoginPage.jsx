@@ -1,287 +1,303 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 import bg from "../assets/loginBG/loginBG.jpg";
 import Logo from "../assets/logo/PLSPLogo.png";
 import courses from "../data/courses";
 import Popup from "../components/pop_up/Popup";
 import FloatingInput from "../components/common/input/FloaterInput";
+import LoadingSpinner from "../components/common/LoadingSpinner";
+import { Icon } from "@iconify/react";
 
-import { loginStudent, registerStudent } from "../services/authService";
-import {
-  validateNameStep,
-  validateRegisterStep,
-  validateLoginInput,
-} from "../utils/validators";
+import { useLoginForm } from "../hooks/useLoginForm";
+import { usePopup } from "../hooks/usePopup";
+import { useAuth } from "../hooks/useAuth";
 
 function LoginPage() {
-  const navigate = useNavigate();
-  const [isRegistering, setIsRegistering] = useState(false);
-  const [step, setStep] = useState(1);
+  const { form, handleChange, validateLogin, validateName, validateRegister, resetForm } = useLoginForm();
+  const { popup, showPopup, hidePopup } = usePopup();
+  const {
+    isLoggingIn,
+    isRegisteringAccount,
+    isRegistering,
+    step,
+    handleLogin,
+    handleRegister,
+    goToNextStep,
+    toggleRegister,
+  } = useAuth(showPopup, resetForm);
 
-  const [popup, setPopup] = useState({
-    show: false,
-    message: "",
-    success: false,
-  });
-
-  const showPopup = (msg, success = false) => {
-    setPopup({ show: true, message: msg, success });
-  };
-
-  const [form, setForm] = useState({
-    loginId: "",
-    loginPass: "",
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    studentId: "",
-    password: "",
-    confirmPassword: "",
-    course: "",
-  });
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  /* ================= LOGIN ================= */
-  const handleLogin = async () => {
-    const errorMsg = validateLoginInput(form);
+  // Wrapper functions to pass form data
+  const onLogin = () => {
+    const errorMsg = validateLogin();
     if (errorMsg) return showPopup(errorMsg);
-
-    const res = await loginStudent(form.loginId, form.loginPass);
-
-    if (!res.success) return showPopup(res.message);
-
-    localStorage.setItem("auth", "true");
-
-    if (res.data) {
-      localStorage.setItem("user", JSON.stringify(res.data));
-    }
-
-    showPopup("Login Successful", true);
-
-    setTimeout(() => {
-      navigate("/hero");
-    }, 1000);
+    handleLogin(form);
   };
 
-  /* ================= REGISTER STEP 1 ================= */
-  const handleStep1 = () => {
-    const errorMsg = validateNameStep(form);
-    if (errorMsg) return showPopup(errorMsg);
-    setStep(2);
+  const onRegister = () => {
+    handleRegister(form, validateRegister);
   };
 
-  /* ================= REGISTER STEP 2 ================= */
-  const handleRegister = async () => {
-    const errorMsg = validateRegisterStep(form);
-    if (errorMsg) return showPopup(errorMsg);
-
-    const res = await registerStudent(form);
-
-    if (!res.success) return showPopup(res.message);
-
-    showPopup("Registration Successful", true);
-
-    setIsRegistering(false);
-    setStep(1);
+  const onNextStep = () => {
+    goToNextStep(validateName);
   };
 
   return (
     <div
-      className="h-screen bg-cover bg-center relative"
+      className="relative h-screen bg-center bg-cover"
       style={{ backgroundImage: `url(${bg})` }}
     >
       <Popup
         show={popup.show}
         message={popup.message}
         success={popup.success}
-        onClose={() => setPopup({ ...popup, show: false })}
+        onClose={hidePopup}
       />
 
       <div className="absolute inset-0 bg-linear-to-b from-green-100/60 to-emerald-800 backdrop-blur-xs"></div>
 
-      <div className="flex md:flex-row flex-col md:mx-30 gap-y-4 gap-x-30 items-center justify-center relative z-10 h-full">
-
+      <div className="relative z-10 flex flex-col items-center justify-center h-full md:flex-row md:mx-30 gap-y-4 gap-x-30">
         <div className="flex flex-col items-center gap-y-4">
           <div
-            className="md:h-70 md:w-70 h-40 w-40 bg-cover rounded-full"
+            className="w-40 h-40 bg-cover rounded-full md:h-70 md:w-70"
             style={{ backgroundImage: `url(${Logo})` }}
           ></div>
 
-          <p className="md:text-2xl text-xl font-bold text-white text-center">
+          <p className="text-xl font-bold text-center text-white md:text-2xl">
             Pamantasan ng Lungsod ng San Pablo
           </p>
         </div>
 
-        <div className="flex flex-col w-100 justify-center items-center gap-y-4 bg-white rounded-xl p-6 shadow-lg">
-
+        <div className="flex flex-col items-center justify-center p-6 bg-white shadow-lg w-100 gap-y-4 rounded-xl">
           {!isRegistering && (
-            <>
-              <h1 className="text-green-900 font-bold text-3xl">Welcome!</h1>
-              <p className="text-sm text-gray-600 text-center">
-                Fill out the information below to access your account
-              </p>
-
-              <FloatingInput
-                name="loginId"
-                value={form.loginId}
-                onChange={handleChange}
-                label="Student ID"
-                icon="mdi:card-account-details"
-              />
-
-              <FloatingInput
-                type="password"
-                name="loginPass"
-                value={form.loginPass}
-                onChange={handleChange}
-                label="Password"
-                icon="mdi:lock"
-              />
-
-              <button
-                onClick={handleLogin}
-                className="bg-green-700 hover:bg-green-800 w-full text-white px-4 py-3 rounded transition"
-              >
-                Login
-              </button>
-
-              <div className="flex justify-between w-full text-sm">
-                <p>Don't have an account?</p>
-                <button
-                  onClick={() => setIsRegistering(true)}
-                  className="text-green-700 font-bold"
-                >
-                  Register
-                </button>
-              </div>
-            </>
+            <LoginForm
+              form={form}
+              handleChange={handleChange}
+              onLogin={onLogin}
+              onRegisterClick={() => toggleRegister(true)}
+              isLoggingIn={isLoggingIn}
+            />
           )}
 
-          {/* REGISTER STEP 1 */}
           {isRegistering && step === 1 && (
-            <>
-              <h1 className="text-green-900 font-bold text-2xl">
-                What's your name?
-              </h1>
-
-              <FloatingInput
-                name="firstName"
-                value={form.firstName}
-                onChange={handleChange}
-                label="First Name"
-                icon="mdi:account"
-              />
-
-              <FloatingInput
-                name="middleName"
-                value={form.middleName}
-                onChange={handleChange}
-                label="Middle Name"
-                icon="mdi:account"
-              />
-
-              <FloatingInput
-                name="lastName"
-                value={form.lastName}
-                onChange={handleChange}
-                label="Last Name"
-                icon="mdi:account"
-              />
-
-              <button
-                onClick={handleStep1}
-                className="bg-green-700 hover:bg-green-800 text-white py-3 rounded w-full"
-              >
-                Next
-              </button>
-
-              <button
-                onClick={() => { setIsRegistering(false); setStep(1); }}
-                className="text-sm text-gray-500"
-              >
-                I already have an account
-              </button>
-            </>
+            <RegisterStep1
+              form={form}
+              handleChange={handleChange}
+              onNext={onNextStep}
+              onBack={() => toggleRegister(false)}
+              isRegisteringAccount={isRegisteringAccount}
+            />
           )}
 
-          {/* REGISTER STEP 2 */}
           {isRegistering && step === 2 && (
-            <>
-              <h1 className="text-green-900 font-bold text-2xl">
-                Student Information
-              </h1>
-
-              <FloatingInput
-                name="studentId"
-                value={form.studentId}
-                onChange={handleChange}
-                label="Student ID"
-                icon="mdi:card-account-details"
-              />
-
-              <FloatingInput
-                type="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                label="Password"
-                icon="mdi:lock"
-              />
-
-              <FloatingInput
-                type="password"
-                name="confirmPassword"
-                value={form.confirmPassword}
-                onChange={handleChange}
-                label="Confirm Password"
-                icon="mdi:lock-check"
-              />
-
-              {/* COURSE SELECT */}
-              <div className="relative w-full">
-                <Icon
-                  icon="mdi:school"
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl"
-                />
-
-                <select
-                  name="course"
-                  value={form.course}
-                  onChange={handleChange}
-                  className="w-full border-2 border-gray-300 rounded px-10 py-3 focus:border-green-700 focus:outline-none"
-                >
-                  <option value="">Select Course</option>
-                  {courses.map((course, i) => (
-                    <option key={i} value={course}>
-                      {course}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <button
-                onClick={handleRegister}
-                className="bg-green-700 hover:bg-green-800 text-white py-3 rounded w-full"
-              >
-                Register Account
-              </button>
-
-              <button
-                onClick={() => { setIsRegistering(false); setStep(1); }}
-                className="text-sm text-gray-500"
-              >
-                I already have an account
-              </button>
-            </>
+            <RegisterStep2
+              form={form}
+              handleChange={handleChange}
+              onRegister={onRegister}
+              onBack={() => toggleRegister(false)}
+              isRegisteringAccount={isRegisteringAccount}
+            />
           )}
-
         </div>
       </div>
     </div>
   );
 }
+
+// Sub-components for better organization
+const LoginForm = ({ form, handleChange, onLogin, onRegisterClick, isLoggingIn }) => (
+  <>
+    <h1 className="text-3xl font-bold text-green-900">Welcome!</h1>
+    <p className="text-sm text-center text-gray-600">
+      Fill out the information below to access your account
+    </p>
+
+    <FloatingInput
+      name="loginId"
+      value={form.loginId}
+      onChange={handleChange}
+      label="Student ID"
+      icon="mdi:card-account-details"
+      disabled={isLoggingIn}
+    />
+
+    <FloatingInput
+      type="password"
+      name="loginPass"
+      value={form.loginPass}
+      onChange={handleChange}
+      label="Password"
+      icon="mdi:lock"
+      disabled={isLoggingIn}
+    />
+
+    <button
+      onClick={onLogin}
+      disabled={isLoggingIn}
+      className={`w-full px-4 py-3 text-white transition rounded cursor-pointer flex items-center justify-center
+        ${isLoggingIn 
+          ? 'bg-green-400 cursor-not-allowed' 
+          : 'bg-green-700 hover:bg-green-800'
+        }`}
+    >
+      {isLoggingIn ? (
+        <>
+          <LoadingSpinner />
+          Logging in...
+        </>
+      ) : (
+        'Login'
+      )}
+    </button>
+
+    <div className="flex justify-between w-full text-sm">
+      <p>Don't have an account?</p>
+      <button
+        onClick={onRegisterClick}
+        disabled={isLoggingIn}
+        className={`font-bold text-green-700 ${isLoggingIn ? 'opacity-50 cursor-not-allowed' : ''}`}
+      >
+        Register
+      </button>
+    </div>
+  </>
+);
+
+const RegisterStep1 = ({ form, handleChange, onNext, onBack, isRegisteringAccount }) => (
+  <>
+    <h1 className="text-2xl font-bold text-green-900">What's your name?</h1>
+
+    <FloatingInput
+      name="firstName"
+      value={form.firstName}
+      onChange={handleChange}
+      label="First Name"
+      icon="mdi:account"
+      disabled={isRegisteringAccount}
+    />
+
+    <FloatingInput
+      name="middleName"
+      value={form.middleName}
+      onChange={handleChange}
+      label="Middle Name"
+      icon="mdi:account"
+      disabled={isRegisteringAccount}
+    />
+
+    <FloatingInput
+      name="lastName"
+      value={form.lastName}
+      onChange={handleChange}
+      label="Last Name"
+      icon="mdi:account"
+      disabled={isRegisteringAccount}
+    />
+
+    <button
+      onClick={onNext}
+      disabled={isRegisteringAccount}
+      className={`w-full py-3 text-white rounded ${
+        isRegisteringAccount 
+          ? 'bg-green-400 cursor-not-allowed' 
+          : 'bg-green-700 hover:bg-green-800'
+      }`}
+    >
+      Next
+    </button>
+
+    <button
+      onClick={onBack}
+      disabled={isRegisteringAccount}
+      className={`text-sm text-gray-500 ${isRegisteringAccount ? 'opacity-50 cursor-not-allowed' : ''}`}
+    >
+      I already have an account
+    </button>
+  </>
+);
+
+const RegisterStep2 = ({ form, handleChange, onRegister, onBack, isRegisteringAccount }) => (
+  <>
+    <h1 className="text-2xl font-bold text-green-900">Student Information</h1>
+
+    <FloatingInput
+      name="studentId"
+      value={form.studentId}
+      onChange={handleChange}
+      label="Student ID"
+      icon="mdi:card-account-details"
+      disabled={isRegisteringAccount}
+    />
+
+    <FloatingInput
+      type="password"
+      name="password"
+      value={form.password}
+      onChange={handleChange}
+      label="Password"
+      icon="mdi:lock"
+      disabled={isRegisteringAccount}
+    />
+
+    <FloatingInput
+      type="password"
+      name="confirmPassword"
+      value={form.confirmPassword}
+      onChange={handleChange}
+      label="Confirm Password"
+      icon="mdi:lock-check"
+      disabled={isRegisteringAccount}
+    />
+
+    <div className="relative w-full">
+      <Icon
+        icon="mdi:school"
+        className="absolute text-xl text-gray-400 -translate-y-1/2 left-3 top-1/2"
+      />
+
+      <select
+        name="course"
+        value={form.course}
+        onChange={handleChange}
+        disabled={isRegisteringAccount}
+        className={`w-full px-10 py-3 border-2 border-gray-300 rounded focus:border-green-700 focus:outline-none ${
+          isRegisteringAccount ? 'bg-gray-100 cursor-not-allowed' : ''
+        }`}
+      >
+        <option value="">Select Course</option>
+        {courses.map((course, i) => (
+          <option key={i} value={course}>
+            {course}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    <button
+      onClick={onRegister}
+      disabled={isRegisteringAccount}
+      className={`w-full py-3 text-white rounded flex items-center justify-center ${
+        isRegisteringAccount 
+          ? 'bg-green-400 cursor-not-allowed' 
+          : 'bg-green-700 hover:bg-green-800'
+      }`}
+    >
+      {isRegisteringAccount ? (
+        <>
+          <LoadingSpinner />
+          Registering...
+        </>
+      ) : (
+        'Register Account'
+      )}
+    </button>
+
+    <button
+      onClick={onBack}
+      disabled={isRegisteringAccount}
+      className={`text-sm text-gray-500 ${isRegisteringAccount ? 'opacity-50 cursor-not-allowed' : ''}`}
+    >
+      I already have an account
+    </button>
+  </>
+);
 
 export default LoginPage;

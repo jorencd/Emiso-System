@@ -49,25 +49,25 @@ function BookpageSidebar() {
       className="relative flex flex-col w-1/4 h-screen p-2 bg-center bg-cover border-white"
       style={{ backgroundImage: `url(${bg})` }}
     >
-      <div className="absolute inset-0 bg-linear-to-b from-[#71b280ea] to-[#134E5E]"></div>
+      <div className="absolute inset-0 rounded-lg bg-linear-to-b from-green-600/80 to-emerald-900"></div>
 
       {/* Top Section */}
       <div className="relative z-10 flex flex-col items-center gap-y-4">
         <div
-          className="md:h-20 md:w-20 bg-cover rounded-full"
+          className="bg-cover rounded-full md:h-20 md:w-20"
           style={{ backgroundImage: `url(${Logo})` }}
         ></div>
 
-        <p className="w-full font-bold text-white text-center">
+        <p className="w-full font-bold text-center text-white">
           Pamantasan ng Lungsod ng San Pablo
         </p>
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-10 mt-8 flex-1 flex flex-col">
-        <hr className="my-4 w-full border-white" />
+      <nav className="relative z-10 flex flex-col flex-1 mt-8">
+        <hr className="w-full my-4 border-white" />
 
-        <ul className="space-y-2 w-full">
+        <ul className="w-full space-y-2">
           <li>
             <NavLink 
               to="/hero" 
@@ -91,8 +91,8 @@ function BookpageSidebar() {
           </li>
         </ul>
 
-        <div className="mt-auto w-full">
-          <hr className="my-4 w-full border-white" />
+        <div className="w-full mt-auto">
+          <hr className="w-full my-4 border-white" />
           <NavLink 
             to="/" 
             onClick={handleLogoutClick}
