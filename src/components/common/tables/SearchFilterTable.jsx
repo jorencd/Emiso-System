@@ -16,7 +16,7 @@ function SearchFilterTable({ title, placeholder, categories, onSearchChange, onC
   }, [onCategoryChange]);
 
   return (
-    <div className='w-full px-10 py-7 rounded-2xl border-2 border-green-700 m-2'>
+    <div className="flex w-full flex-col p-2 px-10 border border-green-700">
       <h1 className='text-2xl font-bold text-neutral-700 mb-4'>
         {title}
       </h1>

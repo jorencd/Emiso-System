@@ -51,7 +51,7 @@ function JournalCard({ title, pdfUrl, bgImageUrl }) {
       <div
         className="
       lg:h-20 group flex items-center gap-4
-      border rounded-lg shadow-md
+      border border-gray-400 rounded-lg shadow-md
       cursor-pointer overflow-hidden
       transition-shadow duration-300
       hover:shadow-xl
