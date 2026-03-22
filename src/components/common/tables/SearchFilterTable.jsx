@@ -16,8 +16,8 @@ function SearchFilterTable({ title, placeholder, categories, onSearchChange, onC
   }, [onCategoryChange]);
 
   return (
-    <div className="flex w-full min-h-screen flex-col p-2 px-10 border border-green-700">
-      <h1 className='text-2xl font-bold text-neutral-700 mb-4'>
+    <div className="flex flex-col w-full p-2 px-10 border border-green-700">
+      <h1 className='mb-4 text-2xl font-bold text-neutral-700'>
         {title}
       </h1>
 
@@ -45,7 +45,7 @@ function SearchFilterTable({ title, placeholder, categories, onSearchChange, onC
       </div>
 
       {/* Table Content Passed From Parent */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex flex-col flex-1">
         {children}
       </div>
     </div>

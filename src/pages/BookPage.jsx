@@ -21,7 +21,7 @@ function BookPage() {
   const { books, loading, error } = useBooks();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage] = useState(20);
+  const [postsPerPage] = useState(16);
 
   const filteredBooks = books.filter((book) => {
     const matchesCategory =
@@ -93,8 +93,8 @@ function BookPage() {
 
         {/* BOOK GRID - Use currentBooks instead of filteredBooks */}
         {!loading && !error && filteredBooks.length > 0 && (
-          <div className="flex flex-col flex-1 min-h-[600px]">
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="flex flex-col flex-1">
+            <div className="grid grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {currentBooks.map((book) => (
                 <BookCard
                   key={book.id}
@@ -107,7 +107,7 @@ function BookPage() {
             
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="flex justify-center mt-auto space-x-2 pt-8">
+              <div className="flex justify-center mt-auto space-x-2">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
