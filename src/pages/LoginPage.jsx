@@ -1,5 +1,5 @@
 import React from "react";
-import bg from "../assets/loginBG/loginBG.jpg";
+import bg from "../assets/loginBG/loginbg.jpg";
 import Logo from "../assets/logo/PLSPLogo.png";
 import courses from "../data/courses";
 import Popup from "../components/pop_up/Popup";
