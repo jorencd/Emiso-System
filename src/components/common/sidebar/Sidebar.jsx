@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Logo from "../../../assets/logo/PLSPLogo.png";
-import bg from "../../../assets/loginBG/loginBG.jpg";
+import bg from "../../../assets/loginBG/loginbg.jpg";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import ConfirmModal from "../modal/ConfirmModal";
