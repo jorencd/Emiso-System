@@ -6,11 +6,15 @@ import { useJournals } from "../hooks/useJournals";
 
 const journalCategories = [
   "All",
-  "Fiction",
-  "Non-Fiction",
-  "Science",
-  "Technology",
-  "Education",
+  "Biography",
+  "Business and Economics",
+  "Governments",
+  "History",
+  "Literature and Arts",
+  "Science and Health",
+  "Social Issues",
+  "Sports",
+  "World Culture and Religion",
 ];
 
 function JournalPage() {
@@ -18,7 +22,11 @@ function JournalPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const { journals, loading, error } = useJournals();
 
-  // Filter journals
+  // ✅ PAGINATION STATE
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(16);
+
+  // ✅ FILTER
   const filteredJournals = journals.filter((journal) => {
     const matchesCategory =
       selectedCategory === "All" || journal.category === selectedCategory;
@@ -29,6 +37,20 @@ function JournalPage() {
     return matchesCategory && matchesSearch;
   });
 
+  // ✅ PAGINATION LOGIC
+  const lastPostIndex = currentPage * postsPerPage;
+  const firstPostIndex = lastPostIndex - postsPerPage;
+  const currentJournals = filteredJournals.slice(
+    firstPostIndex,
+    lastPostIndex
+  );
+
+  const totalPages = Math.ceil(filteredJournals.length / postsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <div className="flex w-full h-full gap-x-2">
       <Sidebar />
@@ -37,8 +59,14 @@ function JournalPage() {
         title="Journal List"
         placeholder="Search journals..."
         categories={journalCategories}
-        onSearchChange={(query) => setSearchQuery(query)}
-        onCategoryChange={(category) => setSelectedCategory(category)}
+        onSearchChange={(query) => {
+          setSearchQuery(query);
+          setCurrentPage(1); // ✅ reset page
+        }}
+        onCategoryChange={(category) => {
+          setSelectedCategory(category);
+          setCurrentPage(1); // ✅ reset page
+        }}
       >
         {/* LOADING */}
         {loading && (
@@ -54,7 +82,7 @@ function JournalPage() {
           </div>
         )}
 
-        {/* EMPTY STATE */}
+        {/* EMPTY */}
         {!loading && !error && filteredJournals.length === 0 && (
           <div className="flex flex-col items-center justify-center w-full py-16 text-center text-gray-500">
             <h2 className="text-lg font-semibold">
@@ -71,17 +99,62 @@ function JournalPage() {
           </div>
         )}
 
-        {/* JOURNAL GRID */}
+        {/* ✅ GRID + PAGINATION */}
         {!loading && !error && filteredJournals.length > 0 && (
-          <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {filteredJournals.map((journal) => (
-              <Card
-                key={journal.id}
-                title={journal.title}
-                pdfUrl={journal.pdfUrl}
-                bgImageUrl={journal.bgImageUrl}
-              />
-            ))}
+          <div className="flex flex-col flex-1">
+            {/* GRID */}
+            <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {currentJournals.map((journal) => (
+                <Card
+                  key={journal.id}
+                  title={journal.title}
+                  pdfUrl={journal.pdfUrl}
+                  bgImageUrl={journal.bgImageUrl}
+                />
+              ))}
+            </div>
+
+            {/* PAGINATION */}
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-auto space-x-2">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+
+                {[...Array(totalPages)].map((_, index) => (
+                  <button
+                    key={index + 1}
+                    onClick={() => handlePageChange(index + 1)}
+                    className={`px-4 py-2 text-sm font-medium rounded-md ${
+                      currentPage === index + 1
+                        ? "bg-green-400 text-white"
+                        : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
+                    }`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+
+            {/* INFO */}
+            <div className="mt-4 text-sm text-center text-gray-600">
+              Showing {firstPostIndex + 1} -{" "}
+              {Math.min(lastPostIndex, filteredJournals.length)} of{" "}
+              {filteredJournals.length} journals
+            </div>
           </div>
         )}
       </SearchFilterTable>
